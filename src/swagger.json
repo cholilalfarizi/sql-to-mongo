@@ -1,0 +1,78 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Access API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/data": {
+      "get": {
+        "description": "Get data from mysql",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/sync": {
+      "post": {
+        "description": "Migrate data from mysql to mongodb",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/get-mongo": {
+      "get": {
+        "description": "Get data from mongodb",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    }
+  },
+
+  "securityDefinitions": {
+    "ApiKeyAuth": {
+      "type": "apiKey",
+      "name": "API-Key",
+      "in": "header"
+    }
+  },
+  "definitions": {
+    "AccessData": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "server": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,11 +1,11 @@
-from flask import Blueprint, jsonify
+from flask import jsonify
 from pymongo import MongoClient
 from src.config import config
 from src.config.db import get_connection_db
 from src.repository.inv_letter_corpbond_repo import fetch_data
 import logging
 from decimal import Decimal
-from datetime import date, datetime
+from datetime import date
 
 def inv_letter_corpbond_get_all_data():
     try:
@@ -74,9 +74,6 @@ def inv_letter_corpbond_sync_service():
                 "trustee": row.get("trustee")
             }
 
-            # Remove None values
-            document = {k: v for k, v in document.items() if v is not None}
-
             result = mongo_collection.insert_one(document)
             if result.inserted_id:
                 inserted_count += 1
@@ -84,6 +81,33 @@ def inv_letter_corpbond_sync_service():
         return jsonify({
             "status": "success",
             "message": f"Data migration completed. {inserted_count} records inserted.",
+            "code": 200
+        }), 200
+
+    except Exception as e:
+        logging.exception("Error during data migration")
+        return jsonify({
+            "status": "error",
+            "message": f"Error during data migration: {str(e)}",
+            "code": 500
+        }), 500
+
+    finally:
+        if 'mongo_client' in locals():
+            mongo_client.close()
+
+def get_all_data_from_mongo():
+    try:
+
+        mongo_client = MongoClient(config.MONGO_URI)
+        mongo_db = mongo_client.get_default_database()
+        mongo_collection = mongo_db[config.INV_LETTER_CORPBOND_COL]
+
+        data = mongo_collection.find()
+
+        return jsonify({
+            "status": "success",
+            "data": list(data),
             "code": 200
         }), 200
 
